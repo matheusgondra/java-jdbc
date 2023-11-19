@@ -52,6 +52,11 @@ public class ContaService {
 		update(conta, newValue);
 	}
 
+	public void realizarTransferencia(Integer numeroDaContaOrigem, Integer numeroDaContaDestino, BigDecimal valor) {
+		realizarSaque(numeroDaContaOrigem, valor);
+		realizarDeposito(numeroDaContaDestino, valor);
+	}
+
 	public void encerrar(Integer numeroDaConta) {
 		var conta = buscarContaPorNumero(numeroDaConta);
 		if (conta.possuiSaldo()) {
