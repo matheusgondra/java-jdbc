@@ -55,7 +55,6 @@ public class ContaDAO {
 
 			while (resultSet.next()) {
 				Integer numero = resultSet.getInt(1);
-				BigDecimal saldo = resultSet.getBigDecimal(2);
 				String nome = resultSet.getString(3);
 				String cpf = resultSet.getString(4);
 				String email = resultSet.getString(5);
