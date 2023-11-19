@@ -39,12 +39,20 @@ public class ContaService {
 			throw new RegraDeNegocioException("Saldo insuficiente!");
 		}
 
+		if (!conta.getEstaAtiva()) {
+			throw new RegraDeNegocioException("Conta não está ativa");
+		}
+
 		BigDecimal newValue = conta.getSaldo().subtract(valor);
 		update(conta, newValue);
 	}
 
 	public void realizarDeposito(Integer numeroDaConta, BigDecimal valor) {
 		var conta = buscarContaPorNumero(numeroDaConta);
+		if (!conta.getEstaAtiva()) {
+			throw new RegraDeNegocioException("Conta não está ativa");
+		}
+		
 		BigDecimal newValue = conta.getSaldo().add(valor);
 		update(conta, newValue);
 	}
@@ -61,7 +69,18 @@ public class ContaService {
 		}
 
 		Connection conn = connection.getConnection();
-		new ContaDAO(conn).delete(conta.getNumero());;
+		new ContaDAO(conn).delete(conta.getNumero());
+		;
+	}
+
+	public void encerrarLogico(Integer numeroDaConta) {
+		var conta = buscarContaPorNumero(numeroDaConta);
+		if (conta.possuiSaldo()) {
+			throw new RegraDeNegocioException("Conta não pode ser encerrada pois ainda possui saldo!");
+		}
+
+		Connection conn = connection.getConnection();
+		new ContaDAO(conn).logicUpdate(conta.getNumero());
 	}
 
 	private Conta buscarContaPorNumero(Integer numero) {
