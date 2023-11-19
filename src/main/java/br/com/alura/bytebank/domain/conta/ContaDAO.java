@@ -137,14 +137,24 @@ public class ContaDAO {
 		PreparedStatement ps;
 
 		try {
+			connection.setAutoCommit(false);
+
 			ps = connection.prepareStatement(sql);
 
 			ps.setBigDecimal(1, valor);
 			ps.setInt(2, number);
 			
 			ps.execute();
+			connection.commit();
+
 			ps.close();
+			connection.close();
 		} catch (SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException ex) {
+				throw new RuntimeException(ex);
+			}
 			throw new RuntimeException(e);
 		}
 
