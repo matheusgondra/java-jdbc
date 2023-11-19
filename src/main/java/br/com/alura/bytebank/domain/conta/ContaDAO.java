@@ -23,10 +23,10 @@ public class ContaDAO {
 		var conta = new Conta(dadosDaConta.numero(), cliente);
 
 		String sql = "INSERT INTO conta (numero, saldo, cliente_nome, cliente_cpf, cliente_email) VALUES (?, ?, ?, ?, ?)";
-		
+
 		try {
 			PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
-	
+
 			preparedStatement.setInt(1, conta.getNumero());
 			preparedStatement.setBigDecimal(2, BigDecimal.ZERO);
 			preparedStatement.setString(3, dadosDaConta.dadosCliente().nome());
@@ -78,7 +78,7 @@ public class ContaDAO {
 	public void find(Integer number) {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		
+
 		String sql = "SELECT * FROM conta WHERE numero = ?";
 
 		try {
@@ -95,5 +95,39 @@ public class ContaDAO {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public Conta listByNumber(Integer number) {
+		String sql = "SELECT * FROM conta WHERE numero = ?";
+
+		PreparedStatement ps;
+		ResultSet resultSet;
+		Conta conta = null;
+
+		try {
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, number);
+			resultSet = ps.executeQuery();
+
+			while (resultSet.next()) {
+				Integer numeroRecuperado = resultSet.getInt(1);
+				String nome = resultSet.getString(3);
+				String cpf = resultSet.getString(4);
+				String email = resultSet.getString(5);
+
+				DadosCadastroCliente dadosCadastroCliente = new DadosCadastroCliente(nome, cpf, email);
+				Cliente cliente = new Cliente(dadosCadastroCliente);
+
+				conta = new Conta(numeroRecuperado, cliente);
+			}
+
+			resultSet.close();
+			ps.close();
+			connection.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+
+		return conta;
 	}
 }
